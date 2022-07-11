@@ -55,8 +55,7 @@ object DelayedEvaluationViaFunction {
         return Color.Yellow;
     }
 
-
-
-    // closing words
-    // just use call-by-value, and if you need to delay use a function
+    // closing words, as a rule of thumbs
+    // - use call-by-value whenever possible over call-by-name
+    // - if you need to delay an expensive calculation use a function
 }
