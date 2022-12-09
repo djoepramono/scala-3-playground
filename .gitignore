@@ -10,6 +10,11 @@ dumps/
 .lib/
 .bsp/
 
+# sbt
+project/project/
+project/target/
+target/
+
 # Mac
 .DS_Store
 
@@ -17,7 +22,6 @@ dumps/
 .bloop/
 .metals/
 .vscode/
-
 
 # IntelliJ
 .idea/
