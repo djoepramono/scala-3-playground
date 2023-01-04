@@ -1,42 +1,48 @@
 package playground.polymorphism
 
-// Inheritance based polymorphism
-sealed trait Applicant {
-  val name: String
-}
+object Subtype {
 
-case class InternalApplicant(
-  name: String,
-  yearsInTheCompany: Int,
-) extends Applicant
+  // Inheritance based polymorphism
 
-
-case class IndependentApplicant(
-  name: String,
-  numberOfReferees: Int
-) extends Applicant
-
-case class ReferredApplicant(
-  name: String,
-  agencyName: String
-) extends Applicant
-
-
-def main(args: Array[String]): Unit = {
-
-  def process(a: Applicant): Boolean = a match {
-    case a: InternalApplicant => true
-    case a: IndependentApplicant => false
-    case a: ReferredApplicant => false
+  // The next line can be changed to abstract class and it will work the same
+  sealed trait Applicant() {
+    val name: String
   }
 
-  // we can use the subtype in a function that accept
-  process(InternalApplicant("Jake",3))
-  process(IndependentApplicant("Jake",1))
-  process(ReferredApplicant("Jake","Yesterday Agency"))
+  case class InternalApplicant(
+    name: String,
+    yearsInTheCompany: Int,
+  ) extends Applicant
+
+
+  case class IndependentApplicant(
+    name: String,
+    numberOfReferees: Int
+  ) extends Applicant
+
+  case class ReferredApplicant(
+    name: String,
+    agencyName: String
+  ) extends Applicant
+
+
+  def main(args: Array[String]): Unit = {
+
+    def process(a: Applicant): Boolean = a match {
+      case a: InternalApplicant => true
+      case a: IndependentApplicant => false
+      case a: ReferredApplicant => false
+    }
+
+    // we can use the subtype in a function that accept
+    process(InternalApplicant("Jake",3))
+    process(IndependentApplicant("Jake",1))
+    process(ReferredApplicant("Jake","Yesterday Agency"))
+  }
 }
 
-// Notes
+
+  // Notes
 
 // Parametric polymorphism: generic
 // Subtyping polymorphism: using inheritance / extension to limit the type i.e P<:Applicant
