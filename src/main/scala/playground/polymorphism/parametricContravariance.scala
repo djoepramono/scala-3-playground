@@ -14,6 +14,8 @@ object ParametricContravariance {
     // this type parameter is used in a method's parameter
     // don't forget to put - in the parameter type
     // this means Processor is contravariant in A
+
+    // abstract class can be replaced with trait
     abstract class Processor[-A] {
       def process(a: A): Unit
     }
