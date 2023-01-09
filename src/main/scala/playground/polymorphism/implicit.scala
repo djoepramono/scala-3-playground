@@ -33,5 +33,11 @@ object Implicit {
 
     // now process can be called eventhough the second params: processor are not passed in
     println(process(InternalApplicant("Jill")))
+
+
+    // not sure which implicit would be use?
+    // you can summon the implicit type class and even use it directly
+    val y = summon[Processor[InternalApplicant]]
+    println(y.process(InternalApplicant("Jack")))
   }
 }
