@@ -4,6 +4,11 @@ import scala.collection.mutable.ListBuffer
 
 object ParametricCovariance {
 
+  // Let's revisit the exercise from playground.polymorphism.Parametric
+  // But this time we simplify it a little bit
+  // Instead of Group, we are going to have Queue that only has an internal state
+  //   i.e. Queue.queue is set via constructor
+
   trait Applicant {
     val name: String
   }
@@ -12,30 +17,27 @@ object ParametricCovariance {
 
   def main(args: Array[String]): Unit = {
 
-    // let's create a class that uses the type parameter
-    // but this time instead of a method, it's a property
+    // Queue has `+` before A
     abstract class Queue[+A] {
       val queue: List[A]
     }
 
-    // now let's create the implementation in a class targetting the child type
     val internalApplicantQueue = new Queue[InternalApplicant] {
-      val queue: List[InternalApplicant] = List(InternalApplicant("Jack"))
+      val queue: List[InternalApplicant] = List.empty
     }
 
-    // we can use InternalApplicantQueue for ApplicantQueue
+    // we can use Queue[InternalApplicant] for Queue[Applicant]
     // because the covariant relationship
     val applicantQueue: Queue[Applicant] = internalApplicantQueue
 
-    // but just like the contravariance example, it's not possible to ApplicantQueue on InternalApplicantQueue
-
-
+    // what if we go the other way around?
+    // using Queue[Applicant] for Queue[InternalApplicant]
+    // this would not work, because Queue[Applicant] is not specific enough
+    // which is what we want
     val anotherApplicantQueue = new Queue[Applicant] {
       val queue: List[Applicant] = List.empty
     }
-
-    // because it is not specific enough
-    //val anotherInternalApplicantQueue: List[InternalApplicant] = anotherApplicantQueue
+    // val anotherInternalApplicantQueue: List[InternalApplicant] = anotherApplicantQueue
 
     // Covariance
     // InternalApplicant can be used in a place Applicant
