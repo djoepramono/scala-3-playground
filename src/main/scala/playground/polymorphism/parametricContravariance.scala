@@ -11,7 +11,7 @@ object ParametricContravariance {
     val name: String
   }
   case class InternalApplicant(name: String) extends Applicant
-  case class IndependentApplicant(name: String) extends Applicant
+  case class ExternalApplicant(name: String) extends Applicant
 
   def main(args: Array[String]): Unit = {
 

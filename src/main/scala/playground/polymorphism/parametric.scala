@@ -9,7 +9,7 @@ object Parametric {
     val name: String
   }
   case class InternalApplicant(name: String) extends Applicant
-  case class IndependentApplicant(name: String) extends Applicant
+  case class ExternalApplicant(name: String) extends Applicant
 
   class Group[A] {
     var queue: List[A] = List.empty
@@ -25,7 +25,7 @@ object Parametric {
     // because the subtype can be used in place of the parent type
     val theGroup = Group[Applicant]
     theGroup.add(InternalApplicant("Jon"))
-    theGroup.add(IndependentApplicant("Jess"))
+    theGroup.add(ExternalApplicant("Jess"))
 
     // Can we use a Group[InternalApplicant] in place of Group[Applicant] ?
     // Some of us might think that this should be fine
