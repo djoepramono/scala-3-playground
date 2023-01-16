@@ -1,24 +1,41 @@
-# Parametric Polymorphism
+# Guild Talk
 
-- Doesn't matter which type parameter it has, the function that comes with the type is implemented in the same way
-- In general things happen in the wrapper type, e.g. reversing a list
-- Sometimes known as generics
+1. Polymorphism
+- There are _sort of_ two major polymorphism classifications: parametric and adhoc
+- But they are not exclusive to each other
+- In OO, when people mention polymorphism,_more often than not_, it actually refers to subtype polymorphism
 
-# Adhoc Polymorphism
-
-- Depending on the type parameter, the function that comes with the type may have different implementation
-- This different implementation usually supplied adhocly along with the type
-- The type parameter matters more e.g. json decoder. Decoding class A and class B might be different
-- Sometimes known as function overloading
-
-# Subtype Polymorphism
-
-- If you come from OO though, there's also subtype polymorphism, which heavily depends on inheritance
+2. Subtype Polymorphism
+- Inheritance based polymorphism
+- Liskov Substitution Principle, subclasses should be substitutable for their base class
 - This is where things like invariance, covariance, and contravariance type might happen
 
-# Type Class
+3. Parametric Polymorphism
+- Usually the works happen at wrapper type
+- Also known as generics
+- e.g. List[A] and you can reverse a list doesn't matter what A is
+- In Scala, this wrapper type is invariant in A by default
 
-- Dubbed as the ultimate adhoc polymorphism by George
-- It's more flexible that interface, because you cannot extend a class with interface if you don't control the class. But you can extend that class with type class.
-- In scala this is not the case, as type class is more of the design pattern, done via implicits
+4. Covariance
+- It happens when the the wrapper type has a property that is of type A
+- Analogy: a dog or a cat lover can be considered as an animal lover
+
+5. Contravariance
+- It happens when the wrapper type has a function that is accepting A as parameter
+- Analogy: a vet can check your dogs and cats, but a cat specialist cannot check your dogs.
+
+6. Upper / Lower bound
+- Since subtyping exists, there's a concept of lower bound and upper bound
+- Analogy: you can train the cat specialist to be able to treat dog, but then the cat specialist becomes a vet.
+
+7. Adhoc Polymorphism
+- Depending on the type parameters, the implementation might be different
+- Also known as function overloading
+- Depending on what A is, it would need to be sorted / decoded differently
+- Type class is the ultimate adhoc polymorphism ~ George 2017
+- In Scala, implicits are used to mimic Haskell type class implementation. It's more of a design pattern
 - Implicits is affected by the scope / imports
+
+8. Implicits is also used as contextual abstractions
+- Omitting repetitive parameters i.e. context parameters
+- The context parameters still can be passed explicitly via `using`
