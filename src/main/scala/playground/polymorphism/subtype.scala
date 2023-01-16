@@ -5,6 +5,7 @@ object Subtype {
   // Inheritance based polymorphism
 
   // Sealed trait can be changed to abstract class and it will work the same
+  // We can only extend from one abstract class but we can extend from multiple traits
   sealed trait Applicant() {
     val name: String
   }
@@ -29,8 +30,8 @@ object Subtype {
     // The Liskov Substitution Principle states that subclasses should be substitutable for their base class
     // L in SOLID Principle
     // Internal Applicant <: Applicant
-    process(InternalApplicant("Jake",3))
-    process(ExternalApplicant("Jake","Yesterday Agency"))
+    println(s"processing internal applicant ${process(InternalApplicant("Jake",3))}")
+    println(s"processing external applicant: ${process(ExternalApplicant("Jake","Yesterday Agency"))}")
   }
 
   // Extension:
