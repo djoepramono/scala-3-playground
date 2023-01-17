@@ -2,10 +2,9 @@ package playground.polymorphism
 
 object Subtype {
 
-  // Inheritance based polymorphism
-
-  // Sealed trait can be changed to abstract class and it will work the same
-  // We can only extend from one abstract class but we can extend from multiple traits
+  // inheritance based polymorphism
+  // sealed trait can be changed to abstract class and it will work the same
+  // we can only extend from one abstract class but we can extend from multiple traits
   sealed trait Applicant() {
     val name: String
   }

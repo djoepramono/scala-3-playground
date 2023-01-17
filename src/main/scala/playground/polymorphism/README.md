@@ -18,7 +18,7 @@
 
 4. Covariance
 - It happens when the the wrapper type has a property that is of type A
-- Analogy: a dog or a cat lover can be considered as an animal lover
+- Analogy: we can say a dog or a cat lover is an animal lover, but we cannot say an animal lover is a cat lover
 
 5. Contravariance
 - It happens when the wrapper type has a function that is accepting A as parameter

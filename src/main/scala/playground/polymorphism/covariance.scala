@@ -2,11 +2,11 @@ package playground.polymorphism
 
 import scala.collection.mutable.ListBuffer
 
-object ParametricCovariance {
+object Covariance {
 
-  // Let's revisit the exercise from playground.polymorphism.Parametric
-  // But this time we simplify it a little bit
-  // Instead of Group, we are going to have Queue that only has an internal state
+  // let's revisit the exercise from playground.polymorphism.Parametric
+  // but this time we simplify it a little bit
+  // instead of Group, we are going to have Queue that only has an internal state
   //   i.e. Queue.queue is set via constructor
 
   trait Applicant {

@@ -1,21 +1,22 @@
 package playground.polymorphism
 
-object ParametricWithBound {
+object WithBound {
 
-  // Coming back to the playground.polymorphism.Parametric example
-  // Can we make Group covariant?
+  // coming back to the playground.polymorphism.Parametric example
+  // Group is both contravariant on `add` and covariant in `queue`
   trait Applicant {
     val name: String
   }
   case class InternalApplicant(name: String) extends Applicant
   case class IndependentApplicant(name: String) extends Applicant
 
+  // can we make Group covariant?
+  // - introduce a more generic type B, and use it in `add` which is contravariant by nature
+  // - change the group type to B if B is supplied
+  // - make sure the constructor allow us to set the internal property
   class Group[+A](inputList: List[A] = List.empty) {
     val queue: List[A] = inputList
 
-    // this line has two tricks
-    // - introduce a more generic type B
-    // - change the group type to B if B is supplied
     def add[B >: A](a: B): Group[B] = {
       new Group(a :: inputList )
     }
@@ -23,16 +24,12 @@ object ParametricWithBound {
 
   def main(args: Array[String]): Unit = {
 
-    // A Group of Applicants can have InternalApplicant and IndependentApplicant inside
+    // a Group[Applicant] can have InternalApplicant and IndependentApplicant inside
     // because the subtype can be used in place of the parent type
     val theGroup = Group[Applicant]()
     theGroup.add(InternalApplicant("Jon"))
     theGroup.add(IndependentApplicant("Jess"))
 
-    // for Group[InternalApplicant] to be able to be used in place of Group[Applicant], it needs to be able to accept Applicant
-    // the trick here is to change `add` which is contravariant by nature
-    //   to accept another type B which is a supertype of A
-    // it also return a new Group where that new type B and thus satisfy the covariant requirement
     val internalApplicantGroup = Group[InternalApplicant]()
     val anotherApplicantGroup: Group[Applicant] = internalApplicantGroup
 

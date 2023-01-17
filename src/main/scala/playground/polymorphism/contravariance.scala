@@ -1,10 +1,10 @@
 package playground.polymorphism
 
-object ParametricContravariance {
+object Contravariance {
 
-  // Let's revisit the exercise from playground.polymorphism.Parametric
-  // But this time we simplify it a little bit
-  // Instead of Group, we are going to have Processor that doesn't have an internal state
+  // let's revisit the exercise from playground.polymorphism.Parametric
+  // but this time we simplify it a little bit
+  // instead of Group, we are going to have Processor that doesn't have an internal state
   //   i.e. Processor.process doesn't store the output in a variable inside Processor
 
   trait Applicant {

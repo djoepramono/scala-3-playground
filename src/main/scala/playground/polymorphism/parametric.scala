@@ -2,15 +2,14 @@ package playground.polymorphism
 
 object Parametric {
 
-  // Parametric polymorphism, also known as generics
-  // Usually the works happens on the wrapper type
-
   trait Applicant {
     val name: String
   }
   case class InternalApplicant(name: String) extends Applicant
   case class ExternalApplicant(name: String) extends Applicant
 
+  // lets create a custom class: Group[A]
+  // it has both a property and a method `add` that utilise A
   class Group[A] {
     var queue: List[A] = List.empty
 
@@ -21,7 +20,7 @@ object Parametric {
 
   def main(args: Array[String]): Unit = {
 
-    // A Group of Applicants can have InternalApplicant and IndependentApplicant inside
+    // A Group[Applicant] can have InternalApplicant and IndependentApplicant inside
     // because the subtype can be used in place of the parent type
     val theGroup = Group[Applicant]
     theGroup.add(InternalApplicant("Jon"))
@@ -31,16 +30,13 @@ object Parametric {
     // Some of us might think that this should be fine
     // but we cannot use Group[InternalApplicant] in place of Group[Applicant]
     val internalApplicantGroup = Group[InternalApplicant]
-    // val anotherApplicantGroup: Group[Applicant] = internalApplicantGroup //this won't work
+    // val applicantGroup: Group[Applicant] = internalApplicantGroup
 
     // Group is invariant in A.
     // Group[InternalApplicant] is not a subtype of Group[Applicant]
     // eventhough InternalApplicant is a subtype of Applicant
     // Invariance in Scala is the default behaviour
   }
-
-
-
 
 }
 

@@ -8,19 +8,8 @@ case class IndependentApplicant(name: String) extends Applicant
 
 object Implicit {
 
-  // similar to abstract class in the previous example, we are going to use trait as type class
   trait Processor[A] {
     def process(a: A): Boolean
-  }
-
-  // the difference here is, we are using given
-  object Processor {
-    // in Scala 3, we can only have 1 instance of Processor[InternalApplicant]
-    // in Scala 2, this is not the case, and sometimes we cannot tell which instance will be used
-    given Processor[InternalApplicant] with
-      def process(a: InternalApplicant): Boolean = true
-    given Processor[IndependentApplicant] with
-      def process(a: IndependentApplicant): Boolean = true
   }
 
   // using here is also known as context parameter
@@ -31,6 +20,16 @@ object Implicit {
     processor.process(a)
   }
 
+  // for `process` to work with InternalApplicant, we need to supply the implicit parameter
+  // in Scala 3, we can only have 1 instance of Processor[InternalApplicant]
+  // in Scala 2, this is not the case, and sometimes we cannot tell which instance will be used
+  object Processor {
+    given Processor[InternalApplicant] with
+      def process(a: InternalApplicant): Boolean = true
+    given Processor[IndependentApplicant] with
+      def process(a: IndependentApplicant): Boolean = true
+  }
+
   def main(args: Array[String]): Unit = {
 
     // type class
@@ -39,7 +38,6 @@ object Implicit {
 
     // now process can be called eventhough the second params: processor are not passed in
     println(process(InternalApplicant("Jill")))
-
 
     // not sure which implicit would be use?
     // you can summon the implicit type class and even use it directly
