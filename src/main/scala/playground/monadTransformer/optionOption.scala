@@ -27,7 +27,7 @@ case class OptionOption[A](optionOptionz: Option[Option[A]]) {
   }
 }
 
-object optionOption {
+object OptionOption {
   def main(args: Array[String]): Unit = {
 
     val x = for {
