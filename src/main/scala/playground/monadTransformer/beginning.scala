@@ -22,6 +22,9 @@ object Beginning {
 
     println(Await.result(x, Duration(100, "millis")))
 
+    // flatMap or for comprehension can only unwrap 1 layer at a time
+    // but what if we can mesh 2 layers into 1 one layer?
+
     // what if Future[Option[T]] was a monad
     //    val x = for {
     //      user <- getUser("Jo")

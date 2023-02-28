@@ -4,13 +4,13 @@ import cats.instances.future
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-case class FutureOption[A](futureOption: Future[Option[A]]) {
+case class FutureOption[A](value: Future[Option[A]]) {
 
   def map[B](f: A => B): FutureOption[B] = {
     // There is only one way of creating FutureOption[B]
     // It's through the case class constructor
     // Which means we would need to apply f on unwrapped futureOption
-    FutureOption(futureOption.map(valueOpt => valueOpt.map(f)))
+    FutureOption(value.map(valueOpt => valueOpt.map(f)))
   }
 
   // functors are composable, you can stack map over map
@@ -29,8 +29,8 @@ case class FutureOption[A](futureOption: Future[Option[A]]) {
     //  case class params is accessible as a property in the instantiated object
     //  e.g. you can call .futureOption on FutureOption[A]
 
-     FutureOption(futureOption.flatMap(x => x match {
-       case Some(v) => f(v).futureOption
+     FutureOption(value.flatMap(x => x match {
+       case Some(v) => f(v).value
        case None => Future.successful(None)
      }))
   }
@@ -46,7 +46,7 @@ object FutureOption {
       comment = giveConstructiveFeedback(score)
     } yield comment
 
-    println(Await.result(x.futureOption, Duration(100, "millis")))
+    println(Await.result(x.value, Duration(100, "millis")))
   }
 }
 

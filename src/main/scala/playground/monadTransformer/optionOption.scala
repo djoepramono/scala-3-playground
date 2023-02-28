@@ -5,20 +5,6 @@ import scala.concurrent.duration.Duration
 
 // how about Option[Option[A]] can we turn it into a monad?
 // yes, we can
-case class OptionOption[A](value: Option[Option[A]]) {
-
-  def map[B](f: A => B): OptionOption[B] = {
-    OptionOption(value.map(valueOpt => valueOpt.map(f)))
-  }
-
-  def flatMap[B](f: A => OptionOption[B]): OptionOption[B] = {
-    OptionOption(value.flatMap(x => x match {
-      case Some(v) => f(v).value
-      case None => Some(None)
-    }))
-  }
-}
-
 object OptionOption {
 
   def getUser(name: String): Option[Option[User]] =
@@ -31,6 +17,18 @@ object OptionOption {
     then Some(Some(100))
     else Some(None)
 
+  case class OptionOption[A](value: Option[Option[A]]) {
+    def map[B](f: A => B): OptionOption[B] = {
+      OptionOption(value.map(valueOpt => valueOpt.map(f)))
+    }
+
+    def flatMap[B](f: A => OptionOption[B]): OptionOption[B] = {
+      OptionOption(value.flatMap(x => x match {
+        case Some(v) => f(v).value
+        case None => Some(None)
+      }))
+    }
+  }
 
   def main(args: Array[String]): Unit = {
 
