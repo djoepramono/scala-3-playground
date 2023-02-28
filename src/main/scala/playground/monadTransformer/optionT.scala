@@ -15,13 +15,6 @@ case class OptionT[F[_], A](value: F[Option[A]])(using m: Monad[F]) {
   }
 
   def flatMap[B](f: A => OptionT[F, B]): OptionT[F, B] = {
-    // val result = value.flatMap { valueOpt =>
-    //   valueOpt match {
-    //     case Some(v) => f(v).value
-    //     case None => m.pure[Option[B]](None)
-    //   }
-    // }
-    // OptionT(result)
     OptionT(value.flatMap(x => x match {
       case Some(y) => f(y).value
       case None => m.pure(None)

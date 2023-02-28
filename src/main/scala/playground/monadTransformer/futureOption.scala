@@ -30,7 +30,7 @@ case class FutureOption[A](futureOption: Future[Option[A]]) {
     //  e.g. you can call .futureOption on FutureOption[A]
 
      FutureOption(futureOption.flatMap(x => x match {
-       case Some(v) => f(v).futureOption // what sorcery is `.futureOption`? case class can automatically access the param via .param
+       case Some(v) => f(v).futureOption
        case None => Future.successful(None)
      }))
   }

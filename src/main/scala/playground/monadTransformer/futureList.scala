@@ -27,6 +27,7 @@ object FutureList {
     // but instead of pattern matching on the second step, we do map then fold
     //  map for applying f(_).value
     //  fold to turn List[Future[List[B]]] to Future[List[B]] i.e. removing the outer list
+    //  for comprehension inside fold so we can peel Future from Future[List[B]] and combine the two lists with :::
     def flatMap[B](f: A => FutureList[B]): FutureList[B] = {
       FutureList(value.flatMap(list =>
         list
