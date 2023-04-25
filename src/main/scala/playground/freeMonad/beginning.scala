@@ -21,10 +21,10 @@ case class GetScore(user: User) extends ActionA[Option[Int]]
 // Action[A] represents a free (gratis) monad for your algebra
 type Action[A] = Free[ActionA, A]
 
-// Too many type parameters to look for, several type parameters can be removed 
+// Too many type parameters to look for, several type parameters can be removed
 // - liftF type parameter can be omitted
 // - The algebra type parameter can be omitted
-// getUser is a helper function albeit like higher order function 
+// getUser is a helper function albeit like higher order function
 //   that turn the algebra into a ready to use function that is returns a monad
 
 def getUser(name: String): Action[Option[User]] =
@@ -37,18 +37,18 @@ implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionC
 
 // The intepreter would translate GetUser[A](name: String) to Future[Option[A]]
 // The interpreter result would need to be monadic
-// Future is a monad and not a monad at the same time. 
+// Future is a monad and not a monad at the same time.
 //   This is because Future evaluates eagerly
-//   Future(100) is a monad, Future(Random.nextInt(100)) is not a monad 
+//   Future(100) is a monad, Future(Random.nextInt(100)) is not a monad
 //     because it's not referentially transparent
 val futureInterpreter = new (ActionA ~> Future) {
     override def apply[A](fa: ActionA[A]): Future[A] = fa match {
-        case GetUser(name) => Future.successful(Some(User("Always Joe")))        
-        case GetScore(user) => Future.successful(Some(100))                
+        case GetUser(name) => Future.successful(Some(User("Always Joe")))
+        case GetScore(user) => Future.successful(Some(100))
     }
 }
 
-object FreeMonad {    
+object FreeMonad {
     def main(args: Array[String]): Unit = {
 
         // we can use Monad Transformer from the previous session
@@ -60,12 +60,12 @@ object FreeMonad {
         } yield score
 
         println(maybeScore)
-        
-        // Remember since maybeScore is a Monad Transformer 
+
+        // Remember since maybeScore is a Monad Transformer
         // We need to extract the value (Free Monad)
         // foldMap is basically running the Free Monads i.e. Action[A] and accumulate the result into a monad
         val x = maybeScore.value.foldMap(futureInterpreter)
-        println(Await.result(x, Duration(100, "millis")))        
+        println(Await.result(x, Duration(100, "millis")))
     }
 }
 
@@ -77,6 +77,6 @@ object FreeMonad {
 //     i.e. the actions requires a side effect executor e.g. API connector / DB library
 
 // Extra notes
-// Free Monad is a construction that is left adjoint to a forgetful functor 
+// Free Monad is a construction that is left adjoint to a forgetful functor
 //   whose domain is the category of Monads and whose co-domain is the category of Endofunctors
 // Free Monad build a monad from a functor with `Pure` and `Suspend`
