@@ -9,6 +9,8 @@ import scala.concurrent.Future
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
+import cats.effect.unsafe.implicits._
+import cats.effect.IO
 
 case class User(name: String)
 
@@ -48,6 +50,14 @@ val futureInterpreter = new (ActionA ~> Future) {
     }
 }
 
+// We can also use different interpreters e.g. use IO instead of Future
+val ioInterpreter = new (ActionA ~> IO) {
+    override def apply[A](fa: ActionA[A]): IO[A] = fa match {
+        case GetUser(name) => IO(Some(User("Always Joe")))
+        case GetScore(user) => IO(Some(100))
+    }
+}
+
 object FreeMonad {
     def main(args: Array[String]): Unit = {
 
@@ -59,13 +69,17 @@ object FreeMonad {
             score <- OptionT(getScore(joe))
         } yield score
 
-        println(maybeScore)
-
         // Remember since maybeScore is a Monad Transformer
         // We need to extract the value (Free Monad)
         // foldMap is basically running the Free Monads i.e. Action[A] and accumulate the result into a monad
-        val x = maybeScore.value.foldMap(futureInterpreter)
-        println(Await.result(x, Duration(100, "millis")))
+
+        // With futureInterpreter
+        // val x = maybeScore.value.foldMap(futureInterpreter)
+        // println(Await.result(x, Duration(100, "millis")))
+
+        // With IOInterpreter
+        val x = maybeScore.value.foldMap(ioInterpreter)
+        println(x.unsafeRunSync())
     }
 }
 
