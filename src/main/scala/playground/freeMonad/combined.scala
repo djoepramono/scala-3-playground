@@ -32,21 +32,21 @@ object Combined {
   // EitherK creates a monad type from two functor types
   type BackendAction[A] = EitherK[UserActionA, ScoreActionA, A]
 
+  // ---------------------------
   // Instead of Free[ActionA, A] or Action[A] in the previous example,
   //   we need Free[F,A]
   // In other words, instead of committing to a specific functor,
   //   we say it would be a functor and we will provide the implementation implicitly
   // Instead of liftF, we are using liftInject
-  class UserAction[F[_]: Functor](using I: InjectK[UserActionA, F] ){
+  class UserAction[F[_]](using I: InjectK[UserActionA, F] ){
     def getUser(name: String): Free[F, User] =
       liftInject[F](GetUser(name))
   }
 
-  // The companion object to store the implicits
-  // object UserAction {
-  //   given [UserAction] with
-  //     def userAction[F[_]](using I: InjectK[Interact, F]): UserAction[F] = new UserAction[F]
-  // }
+  object UserAction {
+    given UserAction[BackendAction] with
+      def getUser[F[_]](using I: InjectK[UserActionA, F]): UserAction[F] = new UserAction[F]
+  }
 
   // And a simpler version
   class ScoreAction[F[_]](using I: InjectK[ScoreActionA, F]) {
@@ -54,36 +54,39 @@ object Combined {
       liftInject(GetScore(user))
   }
 
-  // We can also use different interpreters e.g. use IO instead of Future
-  // val ioInterpreter = new (ActionA ~> IO) {
-  //   override def apply[A](fa: ActionA[A]): IO[A] = fa match {
-  //     case GetUser(name)  => IO(Some(User("Always Joe")))
-  //     case GetScore(user) => IO(Some(100))
-  //   }
-  // }
+  object ScoreAction {
+    given ScoreAction[BackendAction] with
+      def getScore[F[_]](using I: InjectK[ScoreActionA, F]): ScoreAction[F] = new ScoreAction[F]
+  }
+  //-------------------------------------
+
+  // Now we need to write the interpreter
+  val userActionInterpreter = new (UserActionA ~> IO) {
+    override def apply[A](uaa: UserActionA[A]): IO[A] = uaa match {
+      case GetUser(name)  => IO(User("Always Joe"))      
+    }
+  }
+
+  val scoreActionInterpreter = new (ScoreActionA ~> IO) {
+    override def apply[A](saa: ScoreActionA[A]): IO[A] = saa match {
+      case GetScore(user)  => IO(100)      
+    }
+  }
+
+  val combinedInterpreter: BackendAction ~> IO = userActionInterpreter or scoreActionInterpreter
 
   def main(args: Array[String]): Unit = {
     println("combined free")
 
-    // we can use Monad Transformer from the previous session
-    // we need the type parameter, otherwise it'll be treated as Any
-    // make sense because it's Action[Option[A]], which mean it can be anything
-    // val maybeScore = for {
-    //   joe <- OptionT(getUser("Joe"))
-    //   score <- OptionT(getScore(joe))
-    // } yield score
+    def program(using ua: UserAction[BackendAction], sa:ScoreAction[BackendAction]): Free[BackendAction, Int] = for {
+      // remember that weird object?
+      joe <- ua.getUser("Joe")
+      score <- sa.getScore(joe)      
+    } yield score
 
-    // // Remember since maybeScore is a Monad Transformer
-    // // We need to extract the value (Free Monad)
-    // // foldMap is basically running the Free Monads i.e. Action[A] and accumulate the result into a monad
+    val score = program.foldMap(combinedInterpreter)
+    println(score.unsafeRunSync())
 
-    // // With futureInterpreter
-    // // val x = maybeScore.value.foldMap(futureInterpreter)
-    // // println(Await.result(x, Duration(100, "millis")))
-
-    // // With IOInterpreter
-    // val x = maybeScore.value.foldMap(ioInterpreter)
-    // println(x.unsafeRunSync())
   }
 }
 
