@@ -19,8 +19,8 @@ object Beginning {
   // ActionA = Action Algebra
   // The algebra contains case classes
   sealed trait ActionA[A]
-  case class GetUser(name: String) extends ActionA[Option[User]]
-  case class GetScore(user: User) extends ActionA[Option[Int]]
+  case class GetUser(name: String) extends ActionA[User]
+  case class GetScore(user: User) extends ActionA[Int]
 
   // Action[A] represents a free (gratis) monad for your algebra
   type Action[A] = Free[ActionA, A]
@@ -30,10 +30,10 @@ object Beginning {
   // - The algebra type parameter can be omitted
   // getUser is a helper function albeit like higher order function
   //   that turn the algebra into a ready to use function that returns a monad
-  def getUser(name: String): Action[Option[User]] =
-    liftF[ActionA, Option[User]](GetUser(name))
+  def getUser(name: String): Action[User] =
+    liftF[ActionA, User](GetUser(name))
 
-  def getScore(user: User): Action[Option[Int]] =
+  def getScore(user: User): Action[Int] =
     liftF(GetScore(user))
 
   // The intepreter would translate GetUser[A](name: String) to Future[Option[A]]
@@ -46,27 +46,24 @@ object Beginning {
     scala.concurrent.ExecutionContext.global
   val futureInterpreter = new (ActionA ~> Future) {
     override def apply[A](fa: ActionA[A]): Future[A] = fa match {
-      case GetUser(name)  => Future.successful(Some(User("Always Joe")))
-      case GetScore(user) => Future.successful(Some(100))
+      case GetUser(name)  => Future.successful(User("Always Joe"))
+      case GetScore(user) => Future.successful(100)
     }
   }
 
   // We can also use different interpreters e.g. use IO instead of Future
   val ioInterpreter = new (ActionA ~> IO) {
     override def apply[A](fa: ActionA[A]): IO[A] = fa match {
-      case GetUser(name)  => IO(Some(User("Always Joe")))
-      case GetScore(user) => IO(Some(100))
+      case GetUser(name)  => IO(User("Always Joe"))
+      case GetScore(user) => IO(100)
     }
   }
 
   def main(args: Array[String]): Unit = {
 
-    // we can use Monad Transformer from the previous session
-    // we need the type parameter, otherwise it'll be treated as Any
-    // make sense because it's Action[Option[A]], which mean it can be anything
-    val maybeScore = for {
-      joe <- OptionT(getUser("Joe"))
-      score <- OptionT(getScore(joe))
+    val joeScore = for {
+      joe <- getUser("Joe")
+      score <- getScore(joe)
     } yield score
 
     // Remember since maybeScore is a Monad Transformer
@@ -78,7 +75,7 @@ object Beginning {
     // println(Await.result(x, Duration(100, "millis")))
 
     // With IOInterpreter
-    val x = maybeScore.value.foldMap(ioInterpreter)
+    val x = joeScore.foldMap(ioInterpreter)
     println(x.unsafeRunSync())
   }
 }
