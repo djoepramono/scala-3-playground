@@ -61,22 +61,23 @@ object Beginning {
 
   def main(args: Array[String]): Unit = {
 
-    val joeScore = for {
-      joe <- getUser("Joe")
-      score <- getScore(joe)
-    } yield score
+    def scoreFinder(name: String): IO[Int] = {
+      val program = for {
+        joe <- getUser(name)
+        score <- getScore(joe)
+      } yield score
 
-    // Remember since maybeScore is a Monad Transformer
-    // We need to extract the value (Free Monad)
-    // foldMap is basically running the Free Monads i.e. Action[A] and accumulate the result into a monad
+      // foldMap is basically running the Free Monads i.e. Action[A] and accumulate the result into a monad
 
-    // With futureInterpreter
-    // val x = maybeScore.value.foldMap(futureInterpreter)
-    // println(Await.result(x, Duration(100, "millis")))
+      // With futureInterpreter
+      // val x = maybeScore.value.foldMap(futureInterpreter)
+      // println(Await.result(x, Duration(100, "millis")))
 
-    // With IOInterpreter
-    val x = joeScore.foldMap(ioInterpreter)
-    println(x.unsafeRunSync())
+      // With IOInterpreter
+      return program.foldMap(ioInterpreter)
+    }
+
+    println(scoreFinder("Joe").unsafeRunSync())
   }
 }
 
