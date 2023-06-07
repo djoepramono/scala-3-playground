@@ -18,6 +18,7 @@ object Beginning {
 
   // ActionA = Action Algebra
   // The algebra contains case classes
+  // In other words, the algebra is listed as sum types
   sealed trait ActionA[A]
   case class GetUser(name: String) extends ActionA[User]
   case class GetScore(user: User) extends ActionA[Int]

@@ -10,6 +10,7 @@ object Beginning {
   case class User(name: String)
 
   // Unlike Free, the algebra is a trait with some methods describing the repository
+  // The algebra is listed as a product type
   trait ActionRepository[F[_]] {
     def getUser(name: String): F[User]
     def getScore(user: User): F[Int]
