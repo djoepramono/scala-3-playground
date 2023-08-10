@@ -19,7 +19,8 @@ object Coyoneda {
       UnderlyingType
     ] // it's the type constructor that we'd like to turn into a Functor, which is F[A]
     val transformation: UnderlyingType => A
-    def map[B](f: A => B): FreeFunctor[F, B] = liftF(underlyingValue)(transformation andThen f)
+    def map[B](f: A => B): FreeFunctor[F, B] =
+      FreeFunctor.liftF(underlyingValue)(transformation andThen f)
 
     // Executing Functor's map
     // Turning FreeFunctor[A] to F[A]
@@ -27,14 +28,30 @@ object Coyoneda {
   }
 
   // Given F[A] and A => B, give me a FreeFunctor[F, B]
-  def liftF[F[_], A, B](fa: F[A])(f: A => B): FreeFunctor[F, B] = new FreeFunctor[F, B] {
-    type UnderlyingType = A
-    val underlyingValue: F[A] = fa
-    val transformation: A => B = f
+  object FreeFunctor {
+    def liftF[F[_], A, B](fa: F[A])(f: A => B): FreeFunctor[F, B] = new FreeFunctor[F, B] {
+      type UnderlyingType = A
+      val underlyingValue: F[A] = fa
+      val transformation: A => B = f
+    }
   }
 
-  case class Coyoneda[F[_], A, B](fa: F[A], ab: A => B)
+  // Imagine there's a type constructor to Action
+  case class Action[A](input: A)
 
-  def main(args: Array[String]): Unit = { println("coyoneda") }
+  def main(args: Array[String]): Unit = {
+    // Turn Action[A] into Functor
+    val coyoneda = FreeFunctor.liftF(Action(2))(_ + 2)
+    val coyoneda2 = coyoneda.map(_ + 3)
+
+    val actionFunctor = new Functor[Action] {
+      override def map[A, B](fa: Action[A])(f: A => B): Action[B] = Action(f(fa.input))
+    }
+
+    val result = coyoneda2.run(actionFunctor)
+
+    // Nothing executes until the next line
+    println(result)
+  }
 
 }
