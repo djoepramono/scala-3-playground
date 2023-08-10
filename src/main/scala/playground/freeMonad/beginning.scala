@@ -53,6 +53,8 @@ object Beginning {
   }
 
   // We can also use different interpreters e.g. use IO instead of Future
+  // If you are confused about new (ActionA ~-> IO), it's the same as
+  //   val ioInterpreter = new ~>[ActionA, IO]()
   val ioInterpreter = new (ActionA ~> IO) {
     override def apply[A](fa: ActionA[A]): IO[A] = fa match {
       case GetUser(name)  => IO(User("Always Joe"))
