@@ -31,12 +31,15 @@ object Coyoneda {
     // Turn underlyingValue or F[UnderlyingType] => F[A]
     def run(f: Functor[F]): F[A] = f.map(underlyingValue)(transformation)
 
-    // Implement `map` with the helpf of `lift`
+    // Apply transformation to this FreeFunctor
+    // Hint 1: Implement `map` with the helpf of `lift`
     def map[B](f: A => B): FreeFunctor[F, B] =
       FreeFunctor.lift(underlyingValue)(transformation andThen f)
   }
 
   // Given F[A] and A => B, give me a FreeFunctor[F, B]
+  // Hint 1: use FreeFunctor constructor
+  // Hint 2: put explicit type in the context variables
   object FreeFunctor {
     def lift[F[_], A, B](fa: F[A])(f: A => B): FreeFunctor[F, B] = new FreeFunctor[F, B] {
       type UnderlyingType = A
